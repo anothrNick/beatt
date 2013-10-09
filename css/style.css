@@ -1,0 +1,206 @@
+*{padding:0;margin:0;box-sizing:border-box;-moz-box-sizing: border-box;text-decoration:none;}
+a{color:#000;}
+html{
+	font-family: Helvetica Neue,Arial,Helvetica,sans-serif;
+	width:100%;
+	height: 100%;
+}
+body{
+	background: url('images/ticks.png');
+}
+
+/*key*/
+#key{
+	left: -16px;
+	top: 5px;
+	height: 66px;
+	width: 5px;
+	position: absolute;
+	font-size: 9px;
+	line-height: 11.8px;
+}
+
+/********************************/
+/*title*/
+#title{
+	font-size: 40px;
+	color: #8c8c8c;
+	text-shadow: 0 2px 2px #EFEFEF;
+}
+
+/*************************************/
+/*page wrapper*/
+#wrap {
+	height: 100%;
+	position: relative;
+	min-width: 1023px;
+	width: 90%;
+	margin: 5% auto;
+	overflow:auto;
+}
+
+/*************************************/
+/*drum image / animation*/
+#drums{
+	height: 100%;
+	float:left;
+	min-width: 400px;
+}
+#drums img{
+	margin: 0px auto;
+	width: 354px;
+	height: 320px;
+}
+
+/*************************************/
+/*drum tab/sheet music area*/
+#tabs{
+	width: 60%;
+	height: 100%;
+	float: left;
+	min-width: 605px;
+	position: relative;
+}
+#tabBody{
+	overflow: auto;
+}
+
+/*************************************/
+/*audio options (play,pause,stop,etc.)*/
+#tabOptions{
+	overflow:auto;
+	margin: 5px;
+}
+.btn{
+	color: #FFF;
+	background-color: #226c3e;
+	padding: 4px 22px;
+	font-size: 13px;
+	border-radius: 2px;
+	border: 1px solid #444;
+	box-shadow: inset 0 1px 1px #669F7f, 0 1px 1px rgba(50,50,50,0.5);
+	float: left;
+	margin-right:4px;
+}
+.btn:hover{
+	background-color: #005a1c;
+}
+.btn:active{
+	background-color: #669F7f;
+}
+
+/*************************************/
+/*each measure*/
+.measure{
+	width: 240px;
+	float:left;
+	margin: 4px 0;
+	position: relative;
+}
+
+#addMeasure{
+	height: 56px;
+	position: absolute;
+	width: 12px;
+	padding: 18px 0 0 1px;
+	right: -10px;
+	top: 10px;
+	border-top-right-radius: 8px;
+	border-bottom-right-radius: 8px;
+	border: 1px solid #888;
+	box-shadow: 1px 1px 2px #EFEFEF;
+
+}
+#addMeasure:after{
+	pointer-events: none;
+	content: '+';
+	color: #666;
+	text-shadow: 0 1px 1px #FFF;
+}
+#addMeasure:hover{
+	box-shadow: 1px 0 1px #AAA;
+}
+
+/*************************************/
+/*each line of each measure*/
+[class^=line]{
+	border: 1px solid #888;
+	height: 12px;
+	margin-top: -1px;
+	box-shadow: inset 0 1px 1px #FFF;
+	z-index:10;
+}
+.line_0{
+	border: none;
+	box-shadow: none;
+}
+
+/*************************************/
+/*each beat of every measure (1,2,3,4) 4:4 for now*/
+[class^=beat]{
+	width: 60px;
+	height: 100%;
+	float: left;
+	position: absolute;
+}
+[class^=beat]:hover{
+	box-shadow:inset 0 0 5px rgba(50,50,50,.8);
+}
+
+.beat_1{
+	top: 0;
+}
+.beat_2{
+	top: 0;
+	left: 60px;
+}
+.beat_3{
+	top: 0;
+	left: 120px;
+}
+.beat_4{
+	top: 0;
+	left: 180px;
+}
+
+/***********************************/
+/*each 16th of every beat (1 e + a)*/
+[class^=sixteen]{
+	height: 54px;
+	width: 15px;
+	float: left;
+	border: none;
+}
+
+/*each row within each 16th of each beat of each measure*/
+[class^=row]{
+	height: 10.8px;
+	width: 15px;
+}
+[class^=row]:hover{
+	background-color: rgba(0,0,200,.4);
+}
+.selectSixt,.selectSixtCym{
+	background-size: 16px 20px;
+	height: 20px;
+	margin-top:-9.2px;
+}
+.selectSixt{
+	background-image: url(images/note.png);
+}
+.selectSixtCym{
+	background-image: url(images/hat.png);
+}
+
+#footer{
+	position:fixed;
+	bottom:0;
+	text-align:center;
+	color:#CCC;
+	font-size:12px;
+	border-top:1px solid #CCC;
+	box-shadow:inset 0 1px 1px #EFEFEF;
+	width: 100%;
+	height: 30px;
+	background: url('images/ticks.png');
+}

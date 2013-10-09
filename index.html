@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<title>beattt</title>
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>
+		<link href='css/style.css' rel='stylesheet' type='text/css'>
+		<script type="text/javascript" src="js/jquery-1.8.3.js"></script>
+<<<<<<< HEAD
+		<script type="text/javascript" src="js/script.js"></script>
+		<script type="text/javascript" src="http://cwilso.github.com/AudioContext-MonkeyPatch/AudioContextMonkeyPatch.js"></script>
+=======
+>>>>>>> changed web api to html5 audio
+	</head>
+	
+	<body>
+		<div id="wrap">
+			<div id="drums"><img src="css/images/drum_sketch.png"/></div>
+			<div id="tabs">
+				<div id="key">cr hi t1 sn t2 ba</div>
+				<div id="tabBody">
+				
+				</div>
+				
+				
+				<div id="tabOptions" style="margin: 5px 0;">
+					<div id="bpmSelect" style="float:left;width: 240px;">
+						<input type="range" min="40" max="180" value="120" oninput="updateTempo(this);">
+						<span id="bpm" style="text-shadow:0 1px #FFF;">120 BPM</span>
+					</div>
+					<div id="audioopt" style="float:left;width: 240px;">
+						<a href="javascript:void(0)" class="btn" onclick="play()">Play</a>
+						<a href="javascript:void(0)" class="btn">Pause</a>
+						<a href="javascript:void(0)" class="btn">Stop</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<audio type="audio/mp3" src="sounds/kick.mp3" id="kick"></audio>
+		<audio type="audio/mp3" src="sounds/snare.mp3" id="snare"></audio>
+		<audio type="audio/mp3" src="sounds/Tom03.mp3" id="Tom03"></audio>
+		<audio type="audio/mp3" src="sounds/Tom01.mp3" id="Tom01"></audio>
+		<audio type="audio/mp3" src="sounds/Ride01.mp3" id="Ride01"></audio>
+		<audio type="audio/mp3" src="sounds/HfHat.mp3" id="HfHat"></audio>
+		<audio type="audio/mp3" src="sounds/Crash01.mp3" id="Crash01"></audio>
+		<!--<div id="footer">© 2013 Nick Sjostrom</div>-->
+	</body>
+	<script type="text/javascript">
+		
+		$(document).ready(function(){
+
+			addMeasure();
+			
+			/* measure -> beat -> sixteenth -> row */
+			$('#tabBody').delegate('*[class^="row"]','click', function(){
+				var beat = {};																//new beat
+				beat['row'] = $(this).attr('class').split('_')[1].split(' ')[0];			//get row number
+				beat['sixteen'] = $(this).parent().attr('class').split('_')[1];				//get sixteenth of beat
+				beat['beat'] = $(this).parent().parent().attr('class').split('_')[1];		//get beat of measure
+				var m = $(this).parent().parent().parent().attr('id').split('_')[1];		//get measure number
+				
+				if($(this).hasClass("selectSixt") || $(this).hasClass("selectSixtCym"))
+					removeFromTAB(this,m,beat);				//remove this beat from TAB object
+				else
+					addToTAB(this,m,beat);						//add this beat to TAB object
+			});
+<<<<<<< HEAD
+			
+			//load audio into buffer
+			if (typeof AudioContext !== "undefined") {
+				context = new AudioContext();
+				loadBuffers();
+			} else if (typeof webkitAudioContext !== "undefined") {
+				context = new webkitAudioContext();
+				loadBuffers();
+			} else {
+				alert('AudioContext not supported. :(');
+			}
+=======
+>>>>>>> changed web api to html5 audio
+		});
+	
+		var TAB = {};
+		TAB.tempo = 120;
+		TAB.measures = [];
+		
+		//add beat to TAB
+		function addToTAB(src, measure, beatData){
+			var row = parseInt(beatData['row']);
+			if(row == 0 || row == 1)
+				$(src).addClass("selectSixtCym");
+			else
+				$(src).addClass("selectSixt");
+			//at measure index
+			//add beatData to length of beatz
+			var bLength = TAB.measures[measure].beatz.length;
+			TAB.measures[measure].beatz[bLength] = beatData;			
+		}
+		
+		//remove beat from TAB
+		function removeFromTAB(src, measure, beatData){
+			var row = parseInt(beatData['row']);
+
+			if(row == 0 || row == 1)
+				$(src).removeClass("selectSixtCym");
+			else
+				$(src).removeClass("selectSixt");
+			
+			var bLength = TAB.measures[measure].beatz.length;
+			for(bt = 0; bt < bLength; bt++)
+			{
+				var thisBeat = TAB.measures[measure].beatz[bt];
+
+				if(	thisBeat['beat'] === beatData['beat'] && thisBeat['row'] === beatData['row'] &&	thisBeat['sixteen'] === beatData['sixteen']){
+					TAB.measures[measure].beatz.splice(bt,1);
+					break;
+				}
+			}
+		}
+		
+		//add measure
+		function addMeasure(){
+			for(i = 0; i < 3; i++)
+			{
+				var mLength = TAB.measures.length;
+				TAB.measures[mLength] = {"beatz":[]};
+				$("#addMeasure").remove();
+				var linesOfSixteen = "<div class=\"row_0\"></div><div class=\"row_1\"></div><div class=\"row_2\"></div><div class=\"row_3\"></div><div class=\"row_4\"></div><div class=\"row_5\"></div>";
+				var sixteens = "<div class=\"sixteen_1\">"+linesOfSixteen+"</div><div class=\"sixteen_2\">"+linesOfSixteen+"</div><div class=\"sixteen_3\">"+linesOfSixteen+"</div><div class=\"sixteen_4\">"+linesOfSixteen+"</div>";
+				$("#tabBody").append("	<div id=\"measure_"+mLength+"\" class=\"measure\">\n" + 
+						"		<div class=\"line_0\"></div>\n" + 
+						"		<div class=\"line_1\"></div>\n" + 
+						"		<div class=\"line_2\"></div>\n" + 
+						"		<div class=\"line_3\"></div>\n" + 
+						"		<div class=\"line_4\"></div>\n" + 
+						"		<div class=\"line_5\"></div>\n" + 
+						"		<div class=\"beat_1\">"+sixteens+"</div>\n" + 
+						"		<div class=\"beat_2\">"+sixteens+"</div>\n" + 
+						"		<div class=\"beat_3\">"+sixteens+"</div>\n" + 
+						"		<div class=\"beat_4\">"+sixteens+"</div>\n" + 
+						"	<div id='addMeasure' onclick='addMeasure()'></div></div>");
+			}
+		}
+		
+		/*play TAB*/
+		function play(){
+			function playSound(buffer, time) {
+				var sound = new Audio(buffer.src);
+				time = time*1000;
+				setTimeout(function(){
+						sound.play();
+					},time);
+			}
+
+			// We'll start playing the rhythm 100 milliseconds from "now"
+			var startTime = 0.100;
+			var tempo = TAB.tempo; // BPM (beats per minute)
+			var beatsPerMeasure = 4; //4:4 time
+			var notesPerBeat = 4 //16th notes, 4 notes per beat
+			var notesPerMeasure = notesPerBeat * beatsPerMeasure;
+			var noteTime = (60 / tempo) / notesPerBeat;
+
+			//for each measure
+				//for each beat
+					//get row for drum to play
+					//sixteenth = ((beatz['beat']- 1) * notesPerBeat) + beatz['sixteenth']
+			var meas = TAB.measures.length;
+			for (var m = 0; m < meas; m++) {
+				var time = startTime + m * notesPerMeasure * noteTime;
+				var disMeasure = TAB.measures[m].beatz;
+				var mLength = disMeasure.length;
+				for(var b = 0; b < mLength; b++)
+				{
+					var disBeat = disMeasure[b];
+					var row = parseInt(disBeat['row']);
+					var beat = parseInt(disBeat['beat']);
+					var sixteen = parseInt(disBeat['sixteen']);
+					
+					var disNote = ((beat- 1) * notesPerBeat) + sixteen;
+					
+					//add note to play
+					if(row == 0)
+						playSound(document.getElementById('Crash01'), time + disNote * noteTime);
+					else if(row == 1)
+						playSound(document.getElementById('HfHat'), time + disNote * noteTime);
+					else if(row == 2)
+						playSound(document.getElementById('Tom03'), time + disNote * noteTime);
+					else if(row == 3)
+						playSound(document.getElementById('snare'), time + disNote * noteTime);
+					else if(row == 4)
+						playSound(document.getElementById('Tom01'), time + disNote * noteTime);
+					else if(row == 5)
+						playSound(document.getElementById('kick'), time + disNote * noteTime);
+				}
+			}
+		}
+		
+		function updateTempo(src)
+		{
+			TAB.tempo = parseInt($(src).val());
+			$("#bpm").text($(src).val()+ " BPM");
+		}
+				
+		/*SAMPLE***
+		//TAB object playing one measure of standard rock beat
+		TAB.tempo = 180;
+		TAB.measures = [				
+					{
+						"beatz" : [
+							{
+								"beat" : 1,
+								"sixteenth" : 1,
+								"row" : 1,
+							},
+							{
+								"beat" : 2,
+								"sixteenth" : 1,
+								"row" : 3,
+							},
+							{
+								"beat" : 3,
+								"sixteenth" : 1,
+								"row" : 1,
+							},
+							{
+								"beat" : 4,
+								"sixteenth" : 1,
+								"row" : 3,
+							}
+						]
+					}
+				];
+		*/
+	</script>
+</html>
