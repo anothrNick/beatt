@@ -1,15 +1,10 @@
 <!DOCTYPE html>
 <html lang='en'>
 	<head>
-		<title>beattt</title>
+		<title>beatt</title>
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>
 		<link href='css/style.css' rel='stylesheet' type='text/css'>
 		<script type="text/javascript" src="js/jquery-1.8.3.js"></script>
-<<<<<<< HEAD
-		<script type="text/javascript" src="js/script.js"></script>
-		<script type="text/javascript" src="http://cwilso.github.com/AudioContext-MonkeyPatch/AudioContextMonkeyPatch.js"></script>
-=======
->>>>>>> changed web api to html5 audio
 	</head>
 	
 	<body>
@@ -63,20 +58,6 @@
 				else
 					addToTAB(this,m,beat);						//add this beat to TAB object
 			});
-<<<<<<< HEAD
-			
-			//load audio into buffer
-			if (typeof AudioContext !== "undefined") {
-				context = new AudioContext();
-				loadBuffers();
-			} else if (typeof webkitAudioContext !== "undefined") {
-				context = new webkitAudioContext();
-				loadBuffers();
-			} else {
-				alert('AudioContext not supported. :(');
-			}
-=======
->>>>>>> changed web api to html5 audio
 		});
 	
 		var TAB = {};
