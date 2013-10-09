@@ -23,9 +23,9 @@
 						<span id="bpm" style="text-shadow:0 1px #FFF;">120 BPM</span>
 					</div>
 					<div id="audioopt" style="float:left;width: 240px;">
-						<a href="javascript:void(0)" class="btn" onclick="play()">Play</a>
-						<a href="javascript:void(0)" class="btn">Pause</a>
-						<a href="javascript:void(0)" class="btn">Stop</a>
+						<a href="javascript:void(0)" class="btn" onclick="play(clearHighLight)">Play</a>
+						<!--<a href="javascript:void(0)" class="btn">Pause</a>
+						<a href="javascript:void(0)" class="btn">Stop</a>-->
 					</div>
 				</div>
 			</div>
@@ -122,12 +122,37 @@
 			}
 		}
 		
+		function clearHighLight()
+		{					
+			var hltdB = $("#tabBody").find('.imitateBeat');
+			var hltdR = $("#tabBody").find('.imitateRow');
+			
+			for(var i = 0;i < hltdB.length;i++)
+			{
+				var t = hltdB[i];
+				$(t).removeClass('imitateBeat');
+			}
+			for(var i = 0;i < hltdR.length;i++)
+			{
+				var t = hltdR[i];
+				$(t).removeClass('imitateRow');
+			}
+		}		
+		
 		/*play TAB*/
-		function play(){
-			function playSound(buffer, time) {
+		function play(f){
+			function playSound(buffer, time, loc) {
 				var sound = new Audio(buffer.src);
-				time = time*1000;
+				time = time*1000;		
 				setTimeout(function(){
+						var dt = loc;
+						
+						if(!$(dt['measure']+" "+dt['beat']).hasClass('imitateBeat')){
+						clearHighLight();
+							$(dt['measure']+" "+dt['beat']).addClass('imitateBeat');
+						}
+						
+						$(dt['measure']+" "+dt['beat']+" "+dt['sixteen']+" "+dt['row']).addClass('imitateRow');
 						sound.play();
 					},time);
 			}
@@ -157,22 +182,32 @@
 					var sixteen = parseInt(disBeat['sixteen']);
 					
 					var disNote = ((beat- 1) * notesPerBeat) + sixteen;
-					
+					//reset data for playback
+					var db = {};
+					db['measure'] = '#measure_' + m;
+					db['row'] = '.row_' + disBeat['row'];
+					db['beat'] = '.beat_' + disBeat['beat'];
+					db['sixteen'] = '.sixteen_' + disBeat['sixteen'];
 					//add note to play
+					var soundToPlay;
 					if(row == 0)
-						playSound(document.getElementById('Crash01'), time + disNote * noteTime);
+						soundToPlay = document.getElementById('Crash01');
 					else if(row == 1)
-						playSound(document.getElementById('HfHat'), time + disNote * noteTime);
+						soundToPlay = document.getElementById('HfHat');
 					else if(row == 2)
-						playSound(document.getElementById('Tom03'), time + disNote * noteTime);
+						soundToPlay = document.getElementById('Tom03');
 					else if(row == 3)
-						playSound(document.getElementById('snare'), time + disNote * noteTime);
+						soundToPlay = document.getElementById('snare');
 					else if(row == 4)
-						playSound(document.getElementById('Tom01'), time + disNote * noteTime);
+						soundToPlay = document.getElementById('Tom01');
 					else if(row == 5)
-						playSound(document.getElementById('kick'), time + disNote * noteTime);
+						soundToPlay = document.getElementById('kick');
+					
+					playSound(soundToPlay, time + disNote * noteTime, db);
 				}
 			}
+			
+			f();
 		}
 		
 		function updateTempo(src)
