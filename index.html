@@ -148,7 +148,7 @@
 						var dt = loc;
 						
 						if(!$(dt['measure']+" "+dt['beat']).hasClass('imitateBeat')){
-						clearHighLight();
+							clearHighLight();
 							$(dt['measure']+" "+dt['beat']).addClass('imitateBeat');
 						}
 						
@@ -210,6 +210,16 @@
 			f();
 		}
 		
+		//pass initial values
+		//measure = 0
+		//beat = 0
+		//sixteen
+		function playRecursive(m,b,s)
+		{
+			//TAB.measures[0].beatz[b]
+			//
+		}
+		
 		function updateTempo(src)
 		{
 			TAB.tempo = parseInt($(src).val());
@@ -219,28 +229,46 @@
 		/*SAMPLE***
 		//TAB object playing one measure of standard rock beat
 		TAB.tempo = 180;
-		TAB.measures = [				
+		TAB.measures = [	
+					//first measure
 					{
+						//4:4 for now
 						"beatz" : [
 							{
-								"beat" : 1,
-								"sixteenth" : 1,
-								"row" : 1,
+								"npb" : 4, //default 4 notes per beat(sixteenth notes), 3 for triplet
+								"notes" : [
+									[0,3,5],	//at the first note of the first beat play: crash, snare, bass
+									[5],		//at the second note of the first beat play: bass
+									[5],		//at the third note of the first beat play: bass
+									[5]			//at the fourth note of the first beat play: bass
+								]
 							},
 							{
-								"beat" : 2,
-								"sixteenth" : 1,
-								"row" : 3,
+								"npb" : 4, //default 4 notes per beat(sixteenth notes), 3 for triplet
+								"notes" : [
+									[0,3,5],	//at the first note of the second beat play: crash, snare, bass
+									[5],		//at the second note of the second beat play: bass
+									[5],		//at the third note of the second beat play: bass
+									[5]			//at the fourth note of the second beat play: bass
+								]
 							},
 							{
-								"beat" : 3,
-								"sixteenth" : 1,
-								"row" : 1,
+								"npb" : 4, //default 4 notes per beat(sixteenth notes), 3 for triplet
+								"notes" : [
+									[0,3,5],	//at the first note of the third beat play: crash, snare, bass
+									[5],		//at the second note of the third beat play: bass
+									[5],		//at the third note of the third beat play: bass
+									[5]			//at the fourth note of the third beat play: bass
+								]
 							},
 							{
-								"beat" : 4,
-								"sixteenth" : 1,
-								"row" : 3,
+								"npb" : 4, //default 4 notes per beat(sixteenth notes), 3 for triplet
+								"notes" : [
+									[0,3,5],	//at the first note of the fourth beat play: crash, snare, bass
+									[5],		//at the second note of the fourth beat play: bass
+									[5],		//at the third note of the fourth beat play: bass
+									[5]			//at the fourth note of the fourth beat play: bass
+								]
 							}
 						]
 					}
