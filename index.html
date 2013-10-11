@@ -37,7 +37,7 @@
 		<audio type="audio/mp3" src="sounds/Ride01.mp3" id="Ride01"></audio>
 		<audio type="audio/mp3" src="sounds/HfHat.mp3" id="HfHat"></audio>
 		<audio type="audio/mp3" src="sounds/Crash01.mp3" id="Crash01"></audio>
-		<!--<div id="footer">© 2013 Nick Sjostrom</div>-->
+		<div id="footer">© 2013 Nick Sjostrom</div>
 	</body>
 	<script type="text/javascript">
 		
@@ -73,8 +73,8 @@
 				$(src).addClass("selectSixt");
 			//at measure index
 			//add beatData to length of beatz
-			var bLength = TAB.measures[measure].beatz.length;
-			TAB.measures[measure].beatz[bLength] = beatData;			
+			var LOCATION = TAB.measures[measure].beatz[beatData['beat']].notes[beatData['sixteen']];
+			LOCATION[LOCATION.length] = beatData['row'];	
 		}
 		
 		//remove beat from TAB
@@ -86,16 +86,8 @@
 			else
 				$(src).removeClass("selectSixt");
 			
-			var bLength = TAB.measures[measure].beatz.length;
-			for(bt = 0; bt < bLength; bt++)
-			{
-				var thisBeat = TAB.measures[measure].beatz[bt];
-
-				if(	thisBeat['beat'] === beatData['beat'] && thisBeat['row'] === beatData['row'] &&	thisBeat['sixteen'] === beatData['sixteen']){
-					TAB.measures[measure].beatz.splice(bt,1);
-					break;
-				}
-			}
+			var LOCATION = TAB.measures[measure].beatz[beatData['beat']].notes[beatData['sixteen']];
+			LOCATION.splice(LOCATION.indexOf(beatData['row']),1);
 		}
 		
 		//add measure
@@ -103,10 +95,10 @@
 			for(i = 0; i < 3; i++)
 			{
 				var mLength = TAB.measures.length;
-				TAB.measures[mLength] = {"beatz":[]};
+				TAB.measures[mLength] = {"bpm" : 4,	"beatz":[{"npb" : 4,"notes" : [[],[],[],[]]},{"npb" : 4,"notes" : [[],[],[],[]]},{"npb" : 4,"notes" : [[],[],[],[]]},{"npb" : 4,"notes" : [[],[],[],[]]}]};
 				$("#addMeasure").remove();
 				var linesOfSixteen = "<div class=\"row_0\"></div><div class=\"row_1\"></div><div class=\"row_2\"></div><div class=\"row_3\"></div><div class=\"row_4\"></div><div class=\"row_5\"></div>";
-				var sixteens = "<div class=\"sixteen_1\">"+linesOfSixteen+"</div><div class=\"sixteen_2\">"+linesOfSixteen+"</div><div class=\"sixteen_3\">"+linesOfSixteen+"</div><div class=\"sixteen_4\">"+linesOfSixteen+"</div>";
+				var sixteens = "<div class=\"sixteen_0\">"+linesOfSixteen+"</div><div class=\"sixteen_1\">"+linesOfSixteen+"</div><div class=\"sixteen_2\">"+linesOfSixteen+"</div><div class=\"sixteen_3\">"+linesOfSixteen+"</div>";
 				$("#tabBody").append("	<div id=\"measure_"+mLength+"\" class=\"measure\">\n" + 
 						"		<div class=\"line_0\"></div>\n" + 
 						"		<div class=\"line_1\"></div>\n" + 
@@ -114,10 +106,10 @@
 						"		<div class=\"line_3\"></div>\n" + 
 						"		<div class=\"line_4\"></div>\n" + 
 						"		<div class=\"line_5\"></div>\n" + 
+						"		<div class=\"beat_0\">"+sixteens+"</div>\n" + 
 						"		<div class=\"beat_1\">"+sixteens+"</div>\n" + 
 						"		<div class=\"beat_2\">"+sixteens+"</div>\n" + 
 						"		<div class=\"beat_3\">"+sixteens+"</div>\n" + 
-						"		<div class=\"beat_4\">"+sixteens+"</div>\n" + 
 						"	<div id='addMeasure' onclick='addMeasure()'></div></div>");
 			}
 		}
@@ -141,7 +133,7 @@
 		
 		/*play TAB*/
 		function play(f){
-			function playSound(buffer, time, loc) {
+			/*function playSound(buffer, time, loc) {
 				var sound = new Audio(buffer.src);
 				time = time*1000;		
 				setTimeout(function(){
@@ -207,17 +199,105 @@
 				}
 			}
 			
-			f();
+			f();*/
+			playRecursive(0,0,0);
 		}
 		
 		//pass initial values
 		//measure = 0
 		//beat = 0
 		//sixteen
-		function playRecursive(m,b,s)
+		function playRecursive(m,b,n)
 		{
-			//TAB.measures[0].beatz[b]
+			var mLength = TAB.measures.length;		//measures
+			var theMeasure = TAB.measures[m];		//this measure
+			var bpm = theMeasure.bpm;				//beats per measure
+			var nLength = theMeasure.beatz.length	//notes in this measure
+			var theNote = theMeasure.beatz[b];		//this note
+			var npb = theNote.npb;					//notes per beat
+			var notesarr = theNote.notes[n];
+			var size = notesarr.length;
+			//calculate time till play, for timeout
+			//		this is based on var noteTime = (60 / tempo) / notesPerBeat;
 			//
+			var noteTime = (60 / TAB.tempo) / npb;
+			//
+			//settimeout
+			//loop for each row in notesarr
+			//	play appropriate sound, add class to note and measure
+			//increment note (n)
+			//	if n == npb {n = 0; increment beat; 
+			//		if beat (b) == bpm
+			//			increment m
+			//				if(m < mLength)
+			//					playRecursive(m,b,n);
+			var present = [];
+			if(size > 0)
+			{
+				for(var nts = 0; nts < size; nts++)
+				{
+					var row = notesarr[nts];
+					var data = {}
+					data.sound = new Audio(getNoteToPlay(row).src);
+					data.style = "#measure_" + m + " .beat_" + b;
+					data.stylez = "#measure_" + m + " .beat_" + b +" .sixteen_" + n + " .row_" + row;
+					present[present.length] = data;
+				}
+			}else{
+				var data = {}
+				data.style = "#measure_" + m + " .beat_" + b;
+				data.stylez = "#measure_" + m + " .beat_" + b +" .sixteen_" + n + " .row_0";
+				present[present.length] = data;
+			}
+			setTimeout(function(){
+				if(size > 0)
+				{
+					for(var pres = 0; pres < size; pres++)
+					{
+						var p = present[pres];
+						p.sound.play();
+						$(p.style).addClass('imitateBeat');
+						$(p.stylez).addClass('imitateRow');
+					}
+				}else{
+					$(present[0].style).addClass('imitateBeat');
+					$(present[0].stylez).addClass('imitateRow');
+				}
+				n++;
+				if(n == npb){
+					n = 0;
+					b++;
+					if(b == bpm){
+					clearHighLight();
+						b = 0;
+						m++;
+						if(m == mLength){
+							return;
+						}
+					}
+				}
+				playRecursive(m,b,n);
+				
+			}, noteTime * 800);
+		}
+		
+		function getNoteToPlay(row)
+		{
+			var soundToPlay;
+			if(row == 0)
+				soundToPlay = document.getElementById('Crash01');
+			else if(row == 1)
+				soundToPlay = document.getElementById('HfHat');
+			else if(row == 2)
+				soundToPlay = document.getElementById('Tom03');
+			else if(row == 3)
+				soundToPlay = document.getElementById('snare');
+			else if(row == 4)
+				soundToPlay = document.getElementById('Tom01');
+			else if(row == 5)
+				soundToPlay = document.getElementById('kick');
+				
+			return soundToPlay;
 		}
 		
 		function updateTempo(src)
@@ -225,7 +305,6 @@
 			TAB.tempo = parseInt($(src).val());
 			$("#bpm").text($(src).val()+ " BPM");
 		}
-				
 		/*SAMPLE***
 		//TAB object playing one measure of standard rock beat
 		TAB.tempo = 180;
@@ -233,6 +312,7 @@
 					//first measure
 					{
 						//4:4 for now
+						"bpm" : 4,	
 						"beatz" : [
 							{
 								"npb" : 4, //default 4 notes per beat(sixteenth notes), 3 for triplet

@@ -154,18 +154,18 @@ body{
 	background-color: rgba(0,0,200,.4);
 }
 
-.beat_1{
+.beat_0{
 	top: 0;
 }
-.beat_2{
+.beat_1{
 	top: 0;
 	left: 60px;
 }
-.beat_3{
+.beat_2{
 	top: 0;
 	left: 120px;
 }
-.beat_4{
+.beat_3{
 	top: 0;
 	left: 180px;
 }
@@ -202,12 +202,10 @@ body{
 #footer{
 	position:fixed;
 	bottom:0;
-	text-align:center;
-	color:#CCC;
+	right:20px;
+	text-align:right;
+	color:#BBB;
 	font-size:12px;
-	border-top:1px solid #CCC;
-	box-shadow:inset 0 1px 1px #EFEFEF;
-	width: 100%;
 	height: 30px;
-	background: url('images/ticks.png');
+	text-shadow: 0 1px 1px #FFF, 0 -1px 1px #BBB;
 }
