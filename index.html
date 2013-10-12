@@ -9,7 +9,17 @@
 	
 	<body>
 		<div id="wrap">
-			<div id="drums"><img src="css/images/drum_sketch.png"/></div>
+			<div id="drums">
+				<div id="drumImg">
+					<img src="css/images/drum_sketch.png"/>
+					<img src="css/images/bassHit.png" id="bassHit" class="ahit hide"/>
+					<img src="css/images/crashHit.png" id="crashHit" class="ahit hide"/>
+					<img src="css/images/hatHit.png" id="hatHit" class="ahit hide"/>
+					<img src="css/images/hitomHit.png" id="hitomHit" class="ahit hide"/>
+					<img src="css/images/lotomHit.png" id="lotomHit" class="ahit hide"/>
+					<img src="css/images/snareHit.png" id="snareHit" class="ahit hide"/>
+				</div>
+			</div>
 			<div id="tabs">
 				<div id="key">cr hi t1 sn t2 ba</div>
 				<div id="tabBody">
@@ -241,6 +251,7 @@
 					data.sound = new Audio(getNoteToPlay(row).src);
 					data.style = "#measure_" + m + " .beat_" + b;
 					data.stylez = "#measure_" + m + " .beat_" + b +" .sixteen_" + n + " .row_" + row;
+					data.anim = getAnim(row);
 					present[present.length] = data;
 				}
 			}else{
@@ -256,19 +267,26 @@
 					{
 						var p = present[pres];
 						p.sound.play();
+						p.anim.removeClass('hide');
 						$(p.style).addClass('imitateBeat');
-						$(p.stylez).addClass('imitateRow');
+						$(p.stylez).addClass('imitateRow');									
+						setTimeout(function(){
+							var t = p.anim;
+							t.addClass('hide');
+						},noteTime * 400);
 					}
 				}else{
 					$(present[0].style).addClass('imitateBeat');
 					$(present[0].stylez).addClass('imitateRow');
 				}
+				
 				n++;
 				if(n == npb){
 					n = 0;
 					b++;
 					if(b == bpm){
-					clearHighLight();
+						removeAnim();
+						clearHighLight();
 						b = 0;
 						m++;
 						if(m == mLength){
@@ -276,6 +294,7 @@
 						}
 					}
 				}
+				
 				playRecursive(m,b,n);
 				
 			}, noteTime * 800);
@@ -298,6 +317,31 @@
 				soundToPlay = document.getElementById('kick');
 				
 			return soundToPlay;
+		}
+		
+		function getAnim(row)
+		{	
+			var imgToPlay;
+			if(row == 0)
+				imgToPlay = $("#crashHit");
+			else if(row == 1)
+				imgToPlay = $("#hatHit");	
+			else if(row == 2)
+				imgToPlay = $("#hitomHit");
+			else if(row == 3)
+				imgToPlay = $("#snareHit");
+			else if(row == 4)
+				imgToPlay = $("#lotomHit");
+			else if(row == 5)
+				imgToPlay = $("#bassHit");
+							
+			return imgToPlay;
+		}
+		
+		function removeAnim()
+		{
+			$(".ahit").removeClass("hide");
+			$(".ahit").addClass("hide");
 		}
 		
 		function updateTempo(src)

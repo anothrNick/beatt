@@ -46,12 +46,20 @@ body{
 	float:left;
 	min-width: 400px;
 }
-#drums img{
+#drums{
+	position:relative;
+		width: 354px;
+	height: 320px;
+}
+#drumImg img{
 	margin: 0px auto;
 	width: 354px;
 	height: 320px;
+	position:absolute;
 }
-
+.hide{
+	display: none;
+}
 /*************************************/
 /*drum tab/sheet music area*/
 #tabs{
