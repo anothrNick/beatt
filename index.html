@@ -34,8 +34,8 @@
 					</div>
 					<div id="audioopt" style="float:left;width: 240px;">
 						<a href="javascript:void(0)" class="btn" onclick="play(clearHighLight)">Play</a>
-						<!--<a href="javascript:void(0)" class="btn">Pause</a>
-						<a href="javascript:void(0)" class="btn">Stop</a>-->
+						<a href="javascript:void(0)" class="btn" onclick="pause()">Pause</a>
+						<a href="javascript:void(0)" class="btn" onclick="stop()">Stop</a>
 					</div>
 				</div>
 			</div>
@@ -53,8 +53,10 @@
 		
 		$(document).ready(function(){
 
+			/*start with three measures*/
 			addMeasure();
 			
+			/* delegate click to row */
 			/* measure -> beat -> sixteenth -> row */
 			$('#tabBody').delegate('*[class^="row"]','click', function(){
 				var beat = {};																//new beat
@@ -71,10 +73,51 @@
 		});
 	
 		var TAB = {};
-		TAB.tempo = 120;
-		TAB.measures = [];
+		TAB.tempo = 120;		//TAB tempo
+		TAB.measures = [];		//JSON of TAB
+		TAB.m = 0;				//keep track when playing
+		TAB.b = 0;				//keep track when playing
+		TAB.n = 0;				//keep track when playing
+		var isPlaying = false;
+		var isPaused = false;
 		
-		//add beat to TAB
+		/*play TAB*/
+		function play(f)
+		{
+			if(isPlaying == false)
+			{
+				isPlaying = true;
+				isPaused = false;
+				playRecursive();
+			}
+		}
+		
+		/*stop TAB*/
+		function stop()
+		{
+			isPaused = false;
+			resetTab();
+		}
+		
+		/*pause TAB*/
+		function pause()
+		{
+			isPlaying = false;
+			isPaused = true;
+		}
+		
+				
+		/*reset TAB playing*/
+		function resetTab()
+		{
+			TAB.m = 0;
+			TAB.n = 0;
+			TAB.b = 0;
+			isPlaying = false;
+		}
+		
+		/*add beat to TAB*/
+		/*from click or copy and paste measure*/
 		function addToTAB(src, measure, beatData){
 			var row = parseInt(beatData['row']);
 			if(row == 0 || row == 1)
@@ -87,7 +130,7 @@
 			LOCATION[LOCATION.length] = beatData['row'];	
 		}
 		
-		//remove beat from TAB
+		/*remove beat from TAB*/
 		function removeFromTAB(src, measure, beatData){
 			var row = parseInt(beatData['row']);
 
@@ -100,12 +143,15 @@
 			LOCATION.splice(LOCATION.indexOf(beatData['row']),1);
 		}
 		
-		//add measure
+		/*add measure*/
 		function addMeasure(){
 			for(i = 0; i < 3; i++)
 			{
+				var NPB = 4;
 				var mLength = TAB.measures.length;
-				TAB.measures[mLength] = {"bpm" : 4,	"beatz":[{"npb" : 4,"notes" : [[],[],[],[]]},{"npb" : 4,"notes" : [[],[],[],[]]},{"npb" : 4,"notes" : [[],[],[],[]]},{"npb" : 4,"notes" : [[],[],[],[]]}]};
+				/* default construction of a measure, 4 beats per measure, 4 notes per beat */
+				/* this will be a little more dynamic, allow for at least 3 notes per beat*/
+				TAB.measures[mLength] = {"bpm" : 4,	"beatz":[{"npb" : NPB,"notes" : [[],[],[],[]]},{"npb" : NPB,"notes" : [[],[],[],[]]},{"npb" : NPB,"notes" : [[],[],[],[]]},{"npb" : NPB,"notes" : [[],[],[],[]]}]};
 				$("#addMeasure").remove();
 				var linesOfSixteen = "<div class=\"row_0\"></div><div class=\"row_1\"></div><div class=\"row_2\"></div><div class=\"row_3\"></div><div class=\"row_4\"></div><div class=\"row_5\"></div>";
 				var sixteens = "<div class=\"sixteen_0\">"+linesOfSixteen+"</div><div class=\"sixteen_1\">"+linesOfSixteen+"</div><div class=\"sixteen_2\">"+linesOfSixteen+"</div><div class=\"sixteen_3\">"+linesOfSixteen+"</div>";
@@ -124,6 +170,7 @@
 			}
 		}
 		
+		/*highlight is for */
 		function clearHighLight()
 		{					
 			var hltdB = $("#tabBody").find('.imitateBeat');
@@ -141,91 +188,19 @@
 			}
 		}		
 		
-		/*play TAB*/
-		function play(f){
-			/*function playSound(buffer, time, loc) {
-				var sound = new Audio(buffer.src);
-				time = time*1000;		
-				setTimeout(function(){
-						var dt = loc;
-						
-						if(!$(dt['measure']+" "+dt['beat']).hasClass('imitateBeat')){
-							clearHighLight();
-							$(dt['measure']+" "+dt['beat']).addClass('imitateBeat');
-						}
-						
-						$(dt['measure']+" "+dt['beat']+" "+dt['sixteen']+" "+dt['row']).addClass('imitateRow');
-						sound.play();
-					},time);
-			}
-
-			// We'll start playing the rhythm 100 milliseconds from "now"
-			var startTime = 0.100;
-			var tempo = TAB.tempo; // BPM (beats per minute)
-			var beatsPerMeasure = 4; //4:4 time
-			var notesPerBeat = 4 //16th notes, 4 notes per beat
-			var notesPerMeasure = notesPerBeat * beatsPerMeasure;
-			var noteTime = (60 / tempo) / notesPerBeat;
-
-			//for each measure
-				//for each beat
-					//get row for drum to play
-					//sixteenth = ((beatz['beat']- 1) * notesPerBeat) + beatz['sixteenth']
-			var meas = TAB.measures.length;
-			for (var m = 0; m < meas; m++) {
-				var time = startTime + m * notesPerMeasure * noteTime;
-				var disMeasure = TAB.measures[m].beatz;
-				var mLength = disMeasure.length;
-				for(var b = 0; b < mLength; b++)
-				{
-					var disBeat = disMeasure[b];
-					var row = parseInt(disBeat['row']);
-					var beat = parseInt(disBeat['beat']);
-					var sixteen = parseInt(disBeat['sixteen']);
-					
-					var disNote = ((beat- 1) * notesPerBeat) + sixteen;
-					//reset data for playback
-					var db = {};
-					db['measure'] = '#measure_' + m;
-					db['row'] = '.row_' + disBeat['row'];
-					db['beat'] = '.beat_' + disBeat['beat'];
-					db['sixteen'] = '.sixteen_' + disBeat['sixteen'];
-					//add note to play
-					var soundToPlay;
-					if(row == 0)
-						soundToPlay = document.getElementById('Crash01');
-					else if(row == 1)
-						soundToPlay = document.getElementById('HfHat');
-					else if(row == 2)
-						soundToPlay = document.getElementById('Tom03');
-					else if(row == 3)
-						soundToPlay = document.getElementById('snare');
-					else if(row == 4)
-						soundToPlay = document.getElementById('Tom01');
-					else if(row == 5)
-						soundToPlay = document.getElementById('kick');
-					
-					playSound(soundToPlay, time + disNote * noteTime, db);
-				}
-			}
-			
-			f();*/
-			playRecursive(0,0,0);
-		}
-		
 		//pass initial values
 		//measure = 0
 		//beat = 0
 		//sixteen
-		function playRecursive(m,b,n)
+		function playRecursive()
 		{
 			var mLength = TAB.measures.length;		//measures
-			var theMeasure = TAB.measures[m];		//this measure
+			var theMeasure = TAB.measures[TAB.m];	//this measure
 			var bpm = theMeasure.bpm;				//beats per measure
 			var nLength = theMeasure.beatz.length	//notes in this measure
-			var theNote = theMeasure.beatz[b];		//this note
+			var theNote = theMeasure.beatz[TAB.b];	//this note
 			var npb = theNote.npb;					//notes per beat
-			var notesarr = theNote.notes[n];
+			var notesarr = theNote.notes[TAB.n];
 			var size = notesarr.length;
 			//calculate time till play, for timeout
 			//		this is based on var noteTime = (60 / tempo) / notesPerBeat;
@@ -249,17 +224,18 @@
 					var row = notesarr[nts];
 					var data = {}
 					data.sound = new Audio(getNoteToPlay(row).src);
-					data.style = "#measure_" + m + " .beat_" + b;
-					data.stylez = "#measure_" + m + " .beat_" + b +" .sixteen_" + n + " .row_" + row;
+					data.style = "#measure_" + TAB.m + " .beat_" + TAB.b;
+					data.stylez = "#measure_" + TAB.m + " .beat_" + TAB.b +" .sixteen_" + TAB.n + " .row_" + row;
 					data.anim = getAnim(row);
 					present[present.length] = data;
 				}
 			}else{
 				var data = {}
-				data.style = "#measure_" + m + " .beat_" + b;
-				data.stylez = "#measure_" + m + " .beat_" + b +" .sixteen_" + n + " .row_0";
+				data.style = "#measure_" + TAB.m + " .beat_" + TAB.b;
+				data.stylez = "#measure_" + TAB.m + " .beat_" + TAB.b +" .sixteen_" + TAB.n + " .row_0";
 				present[present.length] = data;
 			}
+			
 			setTimeout(function(){
 				if(size > 0)
 				{
@@ -280,24 +256,32 @@
 					$(present[0].stylez).addClass('imitateRow');
 				}
 				
-				n++;
-				if(n == npb){
-					n = 0;
-					b++;
-					if(b == bpm){
+				TAB.n++;
+				if(TAB.n == npb){
+					TAB.n = 0;
+					TAB.b++;
+					if(TAB.b == bpm){
 						removeAnim();
 						clearHighLight();
-						b = 0;
-						m++;
-						if(m == mLength){
+						TAB.b = 0;
+						TAB.m++;
+						if(TAB.m == mLength){
+							resetTab();
 							return;
 						}
 					}
 				}
 				
-				playRecursive(m,b,n);
+				if(isPlaying == true)
+				{
+					playRecursive();
+				}
+				else if(isPlaying == false && isPaused == false)
+				{
+					clearHighLight();
+				}
 				
-			}, noteTime * 800);
+			}, noteTime * 900);
 		}
 		
 		function getNoteToPlay(row)
